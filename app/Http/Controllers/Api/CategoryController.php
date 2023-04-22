@@ -7,6 +7,7 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class CategoryController extends Controller
 {
@@ -22,7 +23,18 @@ class CategoryController extends Controller
 
     public function store(StoreCategoryRequest $request)
     {
-        $category = Category::create($request->all());
+        $category = Category::create($request->validated());
         return new CategoryResource($category);
+    }
+
+    public function update(Category $category, StoreCategoryRequest $request)
+    {
+        $category->update($request->validated());
+        return new CategoryResource($category);
+    }
+
+    public function destroy(Category $category){
+        $category->delete();
+        return response(null, Response::HTTP_NO_CONTENT);
     }
 }
