@@ -23,7 +23,14 @@ class CategoryController extends Controller
 
     public function store(StoreCategoryRequest $request)
     {
-        $category = Category::create($request->validated());
+        $data = $request->all();
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $name = 'categories/' . uniqid() . '.' . $file->extension();
+            $file->storePubliclyAs('public', $name);
+            $data['photo'] = $name;
+        }
+        $category = Category::create($data);
         return new CategoryResource($category);
     }
 
@@ -33,7 +40,8 @@ class CategoryController extends Controller
         return new CategoryResource($category);
     }
 
-    public function destroy(Category $category){
+    public function destroy(Category $category)
+    {
         $category->delete();
         return response(null, Response::HTTP_NO_CONTENT);
     }
